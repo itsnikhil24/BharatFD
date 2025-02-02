@@ -1,7 +1,6 @@
 const mongoose =require ("mongoose");
 
-// mongoose.connect("mongodb://localhost:27017/floodmanagement");
-// mongoose.connect(`mongodb://localhost:27017/floodmanagement`); 
+
 
 
 const userSchema = mongoose.Schema({

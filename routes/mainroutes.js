@@ -11,7 +11,7 @@ router.get('/faqs/translate', translateFAQ);
 router.get("/admindashboard", (req, res) => {
     res.render("faq.ejs");
 })
-router.get("/faqdashboard", (req, res) => {
+router.get("/", (req, res) => {
     res.render("newfaq.ejs");
 })
 router.get("/register-login", (req, res) => {

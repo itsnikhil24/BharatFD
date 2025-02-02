@@ -20,7 +20,7 @@ exports.register= async (req, res) => {
         const newUser = new user({ name, username, password: hashedPassword, phone_number });
 
         await newUser.save();
-        res.redirect("/faqpage");
+        res.redirect("/admindashboard");
     } catch (error) {
         console.error("Registration error:", error);
         res.status(500).send("Error registering user.");
@@ -37,7 +37,7 @@ exports.login=async (req, res) => {
         if (isPasswordMatch) {
             const token = jwt.sign({ username: userRecord.username }, "secretKey");
             res.cookie("token", token);
-            res.redirect("/faqpage");
+            res.redirect("/admindashboard");
         } else {
             res.status(400).send("Incorrect Password");
         }
