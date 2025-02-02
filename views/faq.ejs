@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Manage FAQs</title>
+    <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 80%;
+        margin: 30px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      }
+      .faq-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      .faq-form input,
+      .faq-form textarea,
+      .faq-form button {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .faq-form input,
+      .faq-form textarea {
+        width: 100%;
+      }
+      .faq-form button {
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .faq-form button:hover {
+        background-color: #45a049;
+      }
+      .faq-list {
+        margin-top: 30px;
+      }
+      .faq-item {
+        background-color: #f9f9f9;
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      }
+      .faq-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+      .faq-item-header b {
+        color: #1a73e8;
+        font-size: 18px;
+      }
+      .faq-item-header .arrow {
+        font-size: 20px;
+        transition: transform 0.3s;
+        color: #1a73e8;
+      }
+      .faq-item .faq-answer {
+        margin-top: 10px;
+        color: #555;
+        display: none;
+      }
+      .faq-item.open .arrow {
+        transform: rotate(180deg);
+      }
+    </style>
+  </head>
+  <body>
+     <div id="google_translate_element"></div>
+     <select id="languageSelector">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="bn">Bengali</option>
+    </select>
+    <div class="container">
+      <h2 id="addFaqTitle">Add FAQ</h2>
+      <div class="faq-form">
+        <input
+          type="text"
+          id="question"
+          placeholder="Enter question"
+          required
+        />
+        <textarea id="answer" placeholder="Enter answer" required></textarea>
+        <button onclick="addFAQ()">Add FAQ</button>
+      </div>
+
+      <h2 id="faqListTitle">All FAQs</h2>
+      <div id="faqList" class="faq-list"></div>
+    </div>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script>
+      // Initialize CKEditor for the answer field
+      CKEDITOR.replace("answer");
+
+      // Function to add a new FAQ
+      async function addFAQ() {
+        let question = document.getElementById("question").value;
+        let answer = CKEDITOR.instances.answer.getData(); // Get content from CKEditor
+
+        if (!question || !answer) {
+          alert("Please provide both a question and an answer.");
+          return;
+        }
+
+        let response = await fetch("http://localhost:3000/faqs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, answer }),
+        });
+
+        if (response.ok) {
+          alert("FAQ Added Successfully!");
+          fetchFAQs("en"); // Default language as 'en'
+          document.getElementById("question").value = "";
+          CKEDITOR.instances.answer.setData(""); // Reset CKEditor field
+        }
+      }
+
+      // Function to fetch FAQs from the server
+      async function fetchFAQs(language) {
+        let response = await fetch(
+          `http://localhost:3000/faqs?lang=${language}`
+        );
+        let faqs = await response.json();
+        let faqList = document.getElementById("faqList");
+        faqList.innerHTML = ""; // Clear current FAQ list
+
+        faqs.forEach((faq) => {
+          let div = document.createElement("div");
+          div.classList.add("faq-item");
+
+          div.innerHTML = `
+                <div class="faq-item-header" onclick="toggleAnswer(this)">
+                    <b>${faq.question}</b>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="faq-answer">${faq.answer}</div>
+            `;
+          faqList.appendChild(div);
+        });
+      }
+
+      // Function to toggle the visibility of the answer
+      function toggleAnswer(header) {
+        const faqItem = header.parentElement;
+        const answer = faqItem.querySelector(".faq-answer");
+
+        faqItem.classList.toggle("open");
+        answer.style.display = faqItem.classList.contains("open")
+          ? "block"
+          : "none";
+      }
+
+      // Google Translate Element initialization
+      window.onload = function () {
+        googleTranslateElementInit();
+      };
+
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "en", // Default language of your page
+            includedLanguages: "en,es,fr,de,et,hi", // Include desired languages here
+            autoDisplay: true, // Make sure the translate widget appears immediately
+          },
+          "google_translate_element"
+        );
+      }
+
+      // Fetch FAQs on page load for default language (English)
+      document.getElementById("languageSelector").addEventListener("change", function () {
+        let selectedLanguage = this.value;
+        fetchFAQs(selectedLanguage);
+    });
+    fetchFAQs("en");
+    </script>
+  </body>
+</html>
