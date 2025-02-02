@@ -57,3 +57,13 @@ Admin users can log in here to manage FAQs using CKEditor.
 - English: http://localhost:3000/faqs/?lang=en
 - You can specify other languages by passing different language codes in the URL.
 
+
+## Technologies Used
+  - **Node.js**: JavaScript runtime for the backend server.
+  - **Express.js**: Web framework for Node.js to build the RESTful API.
+  - **MongoDB**: NoSQL database used to store FAQ data.
+  - **Mongoose**: ODM (Object Data Modeling) library for MongoDB to interact with the database.
+  - **bcrypt**: A library used for hashing passwords securely.
+  - **Google Translation API**: Used to provide multilingual support for FAQs.
+  - **CKEditor**: Rich text editor for managing FAQ content (available to admins only).
+
