@@ -10,6 +10,10 @@ This is a RESTful API project for managing FAQs, which includes an admin-only CK
 - **Public FAQ Page**: Users can view FAQs in multiple languages with the Google Translation API.
 - **Multilingual Support**: Translates FAQ content into different languages using Google Translation API.
 
+## Login Credentials
+- username : testing@123
+- password : 123
+
 
 ## Getting Started
 
